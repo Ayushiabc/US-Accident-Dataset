@@ -1,5 +1,4 @@
 pip install opendatasets --upgrade --quiet
-#username":"ayugaur","key":"d2e5edf7d1818d2f8e9acce98300cdb2"
 import opendatasets as od
 dataset_url='https://www.kaggle.com/datasets/sobhanmoosavi/us-accidents'
 od.download(dataset_url)
