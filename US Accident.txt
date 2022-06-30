@@ -1,0 +1,68 @@
+pip install opendatasets --upgrade --quiet
+#username":"ayugaur","key":"d2e5edf7d1818d2f8e9acce98300cdb2"
+import opendatasets as od
+dataset_url='https://www.kaggle.com/datasets/sobhanmoosavi/us-accidents'
+od.download(dataset_url)
+import pandas as pd
+df=pd.read_csv("/content/us-accidents/US_Accidents_Dec21_updated.csv")
+df 
+df.columns
+df.info()
+df.describe()
+numerics = ['int16', 'int32', 'int64', 'float16', 'float32', 'float64']
+num_df = df.select_dtypes(include=numerics)
+len(num_df.columns)
+df.isna().sum().sort_values(ascending=False)
+miss_percent = df.isna().sum().sort_values(ascending=False)/len(df)
+miss_percent
+miss_percent[miss_percent!=0]
+miss_percent[miss_percent!=0].plot(kind ='bar',title='Percentage of misssing values',)
+df.drop(['Number'], axis = 1,inplace = True)
+df.columns
+df.City
+cities = df.City.unique()
+len(cities)
+accidents_per_city = df.City.value_counts()
+accidents_per_city[:10]
+accidents_per_city[:20].plot(kind='bar')
+'New York' in df.City
+'NY' in df.State
+import seaborn as sns
+sns.set_style("darkgrid")
+sns.histplot(accidents_per_city,log_scale = True)
+high_accident_city  = accidents_per_city[accidents_per_city>=1000] 
+low_accident_city = accidents_per_city[accidents_per_city<1000]
+len(cities)
+len(high_accident_city)
+(len(high_accident_city)*100) / len(cities)
+sns.histplot(high_accident_city, log_scale=True)
+len(low_accident_city)
+(len(low_accident_city)*100) / len(cities)
+sns.histplot(low_accident_city, log_scale=True)
+accidents_per_city[accidents_per_city == 1]
+df.Start_Time
+df.Start_Time[0]
+df.Start_Time = pd.to_datetime(df.Start_Time)
+df.Start_Time[0]
+sns.distplot(df.Start_Time.dt.hour, bins=24, kde = False)
+sns.distplot(df.Start_Time.dt.dayofweek, bins= 7, kde =False,color ='red')
+sunday = df.Start_Time[df.Start_Time.dt.dayofweek == 6]
+sns.distplot(sunday.dt.hour,bins=24, color='green')
+monday = df.Start_Time[df.Start_Time.dt.dayofweek == 0]
+sns.distplot(monday.dt.hour,bins=24, color='green')
+sns.distplot(df.Start_Time.dt.month,bins=12, kde = False, color='purple',norm_hist=True)
+year_2017 = df[df.Start_Time.dt.year == 2017]
+sns.distplot(year_2017.Start_Time.dt.month,bins=12,kde=False, color='red',norm_hist=True)
+df.Start_Lat
+df.Start_Lng
+sns.scatterplot(x=df.Start_Lng,y=df.Start_Lat,size=0.0001)
+pip install folium --quiet  
+import folium
+lat_lon_pairs = list(zip(list(df.Start_Lat),list(df.Start_Lng)))
+lat_lon_pairs
+from folium.plugins import HeatMap
+sample = df.sample(int(0.0001 * len(df)))
+lat_lon_pairs = list(zip(list(sample.Start_Lat),list(sample.Start_Lng)))
+map=folium.Map()
+HeatMap(lat_lon_pairs).add_to(map)
+map
